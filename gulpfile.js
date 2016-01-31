@@ -1,16 +1,17 @@
-var gulp = require('gulp');
-var spritesmith = require('gulp.spritesmith');
-var buffer = require('vinyl-buffer');
-var imagemin = require('gulp-imagemin');
-var merge = require('merge-stream');
-var path = require('path');
+const gulp = require('gulp');
+const spritesmith = require('gulp.spritesmith');
+const buffer = require('vinyl-buffer');
+const imagemin = require('gulp-imagemin');
+const merge = require('merge-stream');
+const path = require('path');
+const pngquant = require('imagemin-pngquant');
 
-var emojiCssPath = '../img/emoji/';
+const emojiCssPath = '../img/emoji/';
 
-var emojiSrc = './emoji';
-var dest = './dist';
-var imgDest = path.resolve(dest, 'img/');
-var cssDest = path.resolve(dest, 'css/');
+const emojiSrc = './emoji';
+const dest = './dist';
+const imgDest = path.resolve(dest, 'img/');
+const cssDest = path.resolve(dest, 'css/');
 
 var spriteEmoji = function(emojiName) {
     var spriteData = gulp.src(path.join(emojiSrc, emojiName, '*.png'))
@@ -26,15 +27,17 @@ var spriteEmoji = function(emojiName) {
                               }
                          }));
 
-    var imgSteam = spriteData.img
+    var imgStream = spriteData.img
                .pipe(buffer())
-               .pipe(imagemin())
+               .pipe(imagemin({
+                   use: [pngquant()]
+               }))
                .pipe(gulp.dest(imgDest))
                ;
 
     var cssStream = spriteData.css.pipe(gulp.dest(cssDest));
 
-  return merge(imgSteam, cssStream);
+  return merge(imgStream, cssStream);
 }
 
 gulp.task('emoji-apple', function() {
