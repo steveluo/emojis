@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const spritesmith = require('gulp.spritesmith');
 const buffer = require('vinyl-buffer');
+const del = require('del');
 const imagemin = require('gulp-imagemin');
 const merge = require('merge-stream');
 const path = require('path');
@@ -10,7 +11,7 @@ const emojiCssPath = '../img/emoji/';
 
 const emojiSrc = './emoji';
 const dest = './dist';
-const imgDest = path.resolve(dest, 'img/');
+const imgDest = path.resolve(dest, 'img/emoji');
 const cssDest = path.resolve(dest, 'css/');
 
 var spriteEmoji = function(emojiName) {
@@ -58,11 +59,20 @@ gulp.task('emoji-emoji-one', function() {
 
 gulp.task('emojis', ['emoji-apple', 'emoji-twitter', 'emoji-emoji-one']);
 
+gulp.task('copy-custom-emojis', function() {
+    return gulp.src(path.join(emojiSrc, "*.png"))
+               .pipe(gulp.dest(imgDest));
+});
 
-gulp.task('copy-assets', function() {
+gulp.task('copy-json', function() {
     return gulp.src(path.join(emojiSrc, "*.json"))
                .pipe(gulp.dest(dest));
 });
 
-gulp.task('default', ['emojis', 'copy-assets']);
+gulp.task('clean', function() {
+    del([dest], { force: true });
+});
+
+
+gulp.task('default', ['emojis', 'copy-custom-emojis', 'copy-json']);
 
