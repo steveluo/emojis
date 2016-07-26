@@ -57,6 +57,12 @@ gulp.task('emoji-emoji-one', function() {
     return spriteEmoji('emojione');
 });
 
+gulp.task('optimize-image', function() {
+  return gulp.src('generated/*.png')
+           .pipe(imagemin({ use: [ pngquant() ] }))
+           .pipe(gulp.dest(imgDest))
+});
+
 gulp.task('emojis', ['emoji-apple', 'emoji-twitter', 'emoji-emoji-one']);
 
 gulp.task('copy-custom-emojis', function() {
